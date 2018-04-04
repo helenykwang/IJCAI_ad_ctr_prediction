@@ -1,0 +1,59 @@
+提取的特征：
+
+
+1、广告商品类目的分列，	     item_category_list，可以分成三列
+
+2、预测的广告商品的类目分类，predict_category_property，只提取train和test共有的类目（类目属性不为-1），其中的属性过多暂时没有提取
+
+3、对train和test的缺失值进行了填充
+
+4、提取了每天的前一天的广告商品转化率，例如21号就提取20号的转化率；test25号就使用train24号的算
+
+5、以及前两天的转化率
+
+6、提取了同一天同一个用户的点击广告的次数——--同一天用户的点击次数
+
+7、同一天同一件商品被点击次数-----商品的展现和被点击受欢迎程度
+
+8、同一件商品被搜索点击的时间间隔
+
+9、同一天同一件商品的被搜索点击的时间间隔
+
+10、同一天相同用户的点击商品时间间隔
+
+11、'item_category_list'广告商品类目表、'item_property_list'广告商品属性表、'predict_category_property'预测的类目和属性表
+    这里面提取了商品实际类目和预测的类目的数目citem、cpre，商品实际类目和预测的类目相同的数目comc
+          提取了商品实际属性和预测的属性的数目pitem、ppre，商品实际属性和预测的属性相同的数目comp
+	  还进行了比率的计算 comc/math.sqrt(citem*cpre)     comp/math.sqrt(pitem*ppre)
+
+
+
+最终使用feature_importance提取了这54个特征
+'com_pre_cate', 'com_pre_pro', 'com_pre_cateprob', 'com_pre_proprob','num_click','num_conversion', 'num_conversiontd', 'num_show', 'item_time_diff', 'day_item_diff', 'day_user_diff','is_trade','context_timestamp','context_id', 'user_id', 'item_id', 'shop_id', 'shop_score_delivery', 'shop_score_description', 'item_brand_id', 'item_sales_level', 'shop_score_service', 'shop_review_positive_rate', 'user_age_level', 'user_star_level', 'item_city_id', 'item_pv_level', 'shop_review_num_level', 'item_collected_level', 'item_category_list_0', 'context_page_id', 'item_price_level', 'user_occupation_id', 'user_gender_id', 'shop_star_level', 'predict_category_property_7908382889764677758', 'predict_category_property_8277336076276184272', 'predict_category_property_5799347067982556520', 'predict_category_property_509660095530134768', 'predict_category_property_7822717283490579102', 'predict_category_property_4144951645589726964', 'predict_category_property_7258015885215914736', 'predict_category_property_7492960463130085436', 'predict_category_property_2356297995131360540', 'predict_category_property_6007511169620956394', 'item_category_list_1', 'predict_category_property_2011981573061447208', 'predict_category_property_1950314698730389427', 'predict_category_property_5755694407684602296', 'predict_category_property_4864561375761257861', 'predict_category_property_6731593623692005614', 'predict_category_property_836752724084922533', 'predict_category_property_8710739180200009128', 'predict_category_property_7314150500379498593', 'predict_category_property_1771349742445680985', 'predict_category_property_6948560137918828076', 'predict_category_property_8426409705041090944', 'predict_category_property_1760164811125093110', 'predict_category_property_8896700187874717254', 'predict_category_property_4879721024980945592', 'predict_category_property_8257512457089702259', 'predict_category_property_2436715285093487584', 'predict_category_property_5912343598847406450', 'predict_category_property_2482352103497268539', 'predict_category_property_7730907179336883505'
+
+
+'com_pre_cate', 'com_pre_pro', 'com_pre_cateprob', 'com_pre_proprob'这4个特征是[11]进行的计算，分别是相同的类目数、属性数，以及比率pro
+
+'num_click'是同一天同一个用户的点击广告的次数 [6]
+
+'num_conversion', 'num_conversiontd'是前一天的点击率、前两天的点击率
+
+'num_show'是[7]
+
+'item_time_diff', 'day_item_diff', 'day_user_diff'是[8]、[9]、[10]
+
+最后面是预测的属性类目列[2]
+ 
+[1]也有一个'item_category_list_1'
+
+
+
+其中没有提取'item_property_list'的属性数据，数量太多了，分别提取了500、1000维特征效果也不是很好
+[6]是提取同一天同一个用户点击广告的次数，但是test是抽样了1/3，这个列的数据在test偏低
+[7]同一天同一件商品被点击次数，test的列也是偏低的
+
+
+【观察的没有使用】整个数据集（train+test）是8天时间，使用sort_values(by=['context_timestamp'])就可以看到每天的时间是2018-09-day 16:00:01~2018-09-(day+1) 16:00:00
+就是说每天是下午4点到明天的下午4点，test是24号下午4点到25号下午4点，然后抽样1/3
+
+还有一些列是可以相乘相加的
